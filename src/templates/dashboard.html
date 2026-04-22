@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Tarefas - IFRO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <span class="navbar-brand">Gerenciador MVC</span>
+            <button class="btn btn-outline-danger btn-sm" onclick="logout()">Sair</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card p-3 shadow-sm">
+                    <h5 id="form-title">Nova Tarefa</h5>
+                    <input type="hidden" id="task-id">
+                    <div class="mb-3">
+                        <input type="text" id="title" class="form-control" placeholder="Título">
+                    </div>
+                    <div class="mb-3">
+                        <textarea id="description" class="form-control" placeholder="Descrição"></textarea>
+                    </div>
+                    <button class="btn btn-primary w-100" onclick="saveTask()">Salvar</button>
+                    <button class="btn btn-secondary w-100 mt-2 d-none" id="btn-cancel" onclick="clearForm()">Cancelar</button>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5>Meus Registros</h5>
+                        <table class="table table-hover mt-3">
+                            <thead>
+                                <tr><th>ID</th><th>Título</th><th>Ações</th></tr>
+                            </thead>
+                            <tbody id="task-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api/tasks';
+        const token = localStorage.getItem('access_token');
+
+        if (!token) window.location.href = '/auth/login-page';
+
+        async function loadTasks() {
+            const res = await fetch(API_URL, { headers: { 'Authorization': `Bearer ${token}` } });
+            const tasks = await res.json();
+            const tbody = document.getElementById('task-list');
+            tbody.innerHTML = tasks.map(t => `
+                <tr>
+                    <td>${t.id}</td>
+                    <td>${t.title}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick='editTask(${JSON.stringify(t)})'>Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteTask(${t.id})">Excluir</button>
+                    </td>
+                </tr>`).join('');
+        }
+
+        async function saveTask() {
+            const id = document.getElementById('task-id').value;
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${API_URL}/${id}` : API_URL;
+
+            await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({
+                    title: document.getElementById('title').value,
+                    description: document.getElementById('description').value
+                })
+            });
+            clearForm();
+            loadTasks();
+        }
+
+        async function deleteTask(id) {
+            if (confirm("Deseja excluir?")) {
+                await fetch(`${API_URL}/${id}`, { 
+                    method: 'DELETE', 
+                    headers: { 'Authorization': `Bearer ${token}` } 
+                });
+                loadTasks();
+            }
+        }
+
+        function editTask(task) {
+            document.getElementById('form-title').innerText = "Editar Tarefa";
+            document.getElementById('task-id').value = task.id;
+            document.getElementById('title').value = task.title;
+            document.getElementById('description').value = task.description || '';
+            document.getElementById('btn-cancel').classList.remove('d-none');
+        }
+
+        function clearForm() {
+            document.getElementById('form-title').innerText = "Nova Tarefa";
+            document.getElementById('task-id').value = '';
+            document.getElementById('title').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('btn-cancel').classList.add('d-none');
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            window.location.href = '/auth/login-page';
+        }
+
+        loadTasks();
+    </script>
+</body>
+</html>
