@@ -28,7 +28,7 @@ def list_tasks():
     else:
         tasks = Task.query.filter_by(user_id=user_id).all() 
         
-    result = [{"id": t.id, "title": t.title, "user_id": t.user_id} for t in tasks]
+    result = [{"id": t.id, "title": t.title,"description": t.description , "user_id": t.user_id} for t in tasks]
     return jsonify(result), 200
 
 # 1c. EDITAR (Admin edita qualquer uma, User edita a sua)
