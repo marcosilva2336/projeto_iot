@@ -24,9 +24,9 @@ def list_tasks():
     user = User.query.get(user_id)
     
     if user.role == 'admin':
-        tasks = Task.query.all() # Admin vê tudo
+        tasks = Task.query.all() 
     else:
-        tasks = Task.query.filter_by(user_id=user_id).all() # User vê só as dele
+        tasks = Task.query.filter_by(user_id=user_id).all() 
         
     result = [{"id": t.id, "title": t.title, "user_id": t.user_id} for t in tasks]
     return jsonify(result), 200

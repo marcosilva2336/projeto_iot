@@ -17,9 +17,9 @@ def register_page():
 def login_page():
     return render_template('login.html')
 
-@auth_view_bp.route('/dashboard') # Rota amigável para o navegador
+@auth_view_bp.route('/dashboard') 
 def dashboard_page():
-    # O nome aqui deve ser EXATAMENTE o nome do seu arquivo HTML
+    
     return render_template('dashboard.html')
 
 # --- Rotas da API (JSON) ---

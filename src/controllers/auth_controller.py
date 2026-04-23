@@ -6,16 +6,16 @@ from src.extensions import db
 class AuthController:
     @staticmethod
     def register(data):
-        # Verifica se usuário já existe
+        
         if User.query.filter_by(username=data['username']).first():
             return jsonify({"error": "Usuário já existe"}), 400
         
-        # Cria novo usuário com role
+        
         new_user = User(
             username=data['username'], 
-            role=data.get('role', 'user') # Padrão é usuário comum
+            role=data.get('role', 'user') 
         )
-        new_user.set_password(data['password']) # Hashing seguro
+        new_user.set_password(data['password'])
         
         db.session.add(new_user)
         db.session.commit()
@@ -25,12 +25,12 @@ class AuthController:
     def login(data):
         user = User.query.filter_by(username=data['username']).first()
         
-        # Valida senha e gera Token JWT
+        
         if user and user.check_password(data['password']):
-            # O 'identity' no token será o ID do usuário
+           
             token = create_access_token(identity=str(user.id))
             
-            # Retornamos o token, a role e o username para o Dashboard
+
             return jsonify({
                 "access_token": token, 
                 "role": user.role,
