@@ -11,14 +11,17 @@
         .card { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .btn-primary { background: #764ba2; border: none; }
         .btn-primary:hover { background: #5a3682; }
-        .table thead { background: #f8f9fa; }
+        .user-welcome { color: rgba(255,255,255,0.9); font-size: 0.9rem; margin-right: 15px; border-right: 1px solid rgba(255,255,255,0.3); padding-right: 15px; }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-dark mb-5">
         <div class="container">
             <span class="navbar-brand fw-bold">IoT Dashboard</span>
-            <button class="btn btn-light btn-sm fw-bold" style="color: #764ba2;" onclick="logout()">Sair do Sistema</button>
+            <div class="d-flex align-items-center">
+                <span class="user-welcome d-none d-md-inline">Bem-vindo, <strong id="display-username">Usuário</strong></span>
+                <button class="btn btn-light btn-sm fw-bold" style="color: #764ba2;" onclick="logout()">Sair</button>
+            </div>
         </div>
     </nav>
 
@@ -64,8 +67,16 @@
     <script>
         const API_URL = '/api/tasks';
         const token = localStorage.getItem('access_token');
-        if (!token) window.location.href = '/auth/login-page';
+        const username = localStorage.getItem('username'); // Pega o nome salvo
 
+        if (!token) window.location.href = '/auth/login-page';
+        
+        // Exibe o nome no Header
+        if (username) {
+            document.getElementById('display-username').innerText = username;
+        }
+
+        // --- MANTENHA SUAS FUNÇÕES loadTasks, saveTask, deleteTask, etc ABAIXO ---
         async function loadTasks() {
             const res = await fetch(API_URL, { headers: { 'Authorization': `Bearer ${token}` } });
             const tasks = await res.json();
@@ -125,6 +136,7 @@
 
         function logout() {
             localStorage.removeItem('access_token');
+            localStorage.removeItem('username');
             window.location.href = '/auth/login-page';
         }
 

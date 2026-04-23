@@ -14,23 +14,19 @@ def create_app():
     jwt.init_app(app)
 
     # 1. IMPORTAR OS MODELOS PRIMEIRO
-    # Isso avisa ao SQLAlchemy que as tabelas User e Task precisam existir
     from src.models.user import User, Task
 
-    # 2. CRIAR AS TABELAS DEPOIS
+    # 2. CRIAR AS TABELAS E O ADMIN (TUDO DENTRO DO MESMO BLOCO)
     with app.app_context():
         db.create_all()
-
-        with app.app_context():
-        db.create_all()
         
-        # Lógica para garantir que o Admin exista
+        
         if not User.query.filter_by(username="admin").first():
             admin = User(username="admin", role="admin")
             admin.set_password("admin123") 
             db.session.add(admin)
             db.session.commit()
-            
+            print("Admin criado!")
 
     # 3. REGISTRAR AS ROTAS POR ÚLTIMO
     from src.views.auth_view import auth_view_bp

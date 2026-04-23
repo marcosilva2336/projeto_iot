@@ -31,4 +31,11 @@ class AuthController:
             token = create_access_token(identity=str(user.id))
             return jsonify({"access_token": token, "role": user.role}), 200
             
-        return jsonify({"error": "Credenciais inválidas"}), 401
+        return # Valida senha e gera Token JWT
+        if user and user.check_password(data['password']):
+            token = create_access_token(identity=str(user.id))
+            return jsonify({
+                "access_token": token, 
+                "role": user.role, 
+                "username": user.username
+            }), 200
