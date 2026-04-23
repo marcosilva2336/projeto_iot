@@ -21,6 +21,17 @@ def create_app():
     with app.app_context():
         db.create_all()
 
+        with app.app_context():
+        db.create_all()
+        
+        # Lógica para garantir que o Admin exista
+        if not User.query.filter_by(username="admin").first():
+            admin = User(username="admin", role="admin")
+            admin.set_password("admin123") 
+            db.session.add(admin)
+            db.session.commit()
+            
+
     # 3. REGISTRAR AS ROTAS POR ÚLTIMO
     from src.views.auth_view import auth_view_bp
     from src.controllers.task_controller import task_bp
