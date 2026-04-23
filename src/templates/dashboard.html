@@ -74,21 +74,17 @@
         const token = localStorage.getItem('access_token');
         const username = localStorage.getItem('username');
 
-        // Proteção de Rota: Se não houver token, volta para o login
         if (!token) window.location.href = '/auth/login-page';
         
-        // Exibe o nome do usuário no topo
         if (username) {
             document.getElementById('display-username').innerText = username;
         }
 
-        // Função para interceptar o submit e chamar o salvamento
         function handleFormSubmit(e) {
             e.preventDefault();
             saveTask();
         }
 
-        // Carregar a lista de tarefas
         async function loadTasks() {
             try {
                 const res = await fetch(API_URL, { 
@@ -103,6 +99,7 @@
                     <tr class="align-middle">
                         <td><span class="badge bg-light text-dark">#${t.id}</span></td>
                         <td class="fw-medium">${t.title}</td>
+                        <td class="text-muted small">${t.description || ''}</td>
                         <td class="text-end">
                             <button class="btn btn-sm btn-outline-warning me-1" onclick='editTask(${JSON.stringify(t)})'>Editar</button>
                             <button class="btn btn-sm btn-outline-danger" onclick="deleteTask(${t.id})">Excluir</button>
@@ -113,7 +110,6 @@
             }
         }
 
-        // Criar ou Atualizar Tarefa
         async function saveTask() {
             const id = document.getElementById('task-id').value;
             const method = id ? 'PUT' : 'POST';
@@ -140,7 +136,6 @@
             }
         }
 
-        // Deletar Tarefa
         async function deleteTask(id) {
             if (confirm("Deseja excluir este registro?")) {
                 const res = await fetch(`${API_URL}/${id}`, { 
@@ -156,7 +151,6 @@
             }
         }
 
-        // Preparar formulário para edição
         function editTask(task) {
             document.getElementById('form-title').innerText = "Editar Registro";
             document.getElementById('task-id').value = task.id;
@@ -166,7 +160,6 @@
             document.getElementById('title').focus();
         }
 
-        // Limpar formulário
         function clearForm() {
             document.getElementById('form-title').innerText = "Nova Tarefa";
             document.getElementById('task-id').value = '';
@@ -175,14 +168,12 @@
             document.getElementById('btn-cancel').classList.add('d-none');
         }
 
-        // Logout
         function logout() {
             localStorage.removeItem('access_token');
             localStorage.removeItem('username');
             window.location.href = '/auth/login-page';
         }
 
-      
         loadTasks();
     </script>
 </body>
