@@ -4,6 +4,11 @@ from src.controllers.auth_controller import AuthController
 auth_view_bp = Blueprint('auth_view', __name__)
 
 # --- Rotas para as Páginas (Front-end) ---
+
+@auth_view_bp.route('/')
+def index():
+    return render_template('index.html')
+    
 @auth_view_bp.route('/auth/register-page')
 def register_page():
     return render_template('register.html')
