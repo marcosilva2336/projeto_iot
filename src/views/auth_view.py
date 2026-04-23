@@ -8,7 +8,7 @@ auth_view_bp = Blueprint('auth_view', __name__)
 @auth_view_bp.route('/')
 def index():
     return render_template('index.html')
-    
+
 @auth_view_bp.route('/auth/register-page')
 def register_page():
     return render_template('register.html')
@@ -16,6 +16,11 @@ def register_page():
 @auth_view_bp.route('/auth/login-page')
 def login_page():
     return render_template('login.html')
+
+@auth_view_bp.route('/dashboard') # Rota amigável para o navegador
+def dashboard_page():
+    # O nome aqui deve ser EXATAMENTE o nome do seu arquivo HTML
+    return render_template('dashboard.html')
 
 # --- Rotas da API (JSON) ---
 @auth_view_bp.route('/auth/register', methods=['POST'])

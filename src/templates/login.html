@@ -65,7 +65,7 @@
             const data = await response.json();
             if (response.ok) {
                 localStorage.setItem('access_token', data.access_token);
-                window.location.href = '/tasks';
+                window.location.href = '/dashboard';
             } else {
                 alertDiv.innerText = data.error || 'Erro ao entrar';
                 alertDiv.style.display = 'block';
