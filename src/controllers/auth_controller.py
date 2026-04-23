@@ -21,21 +21,16 @@ class AuthController:
         db.session.commit()
         return jsonify({"msg": "Conta criada com sucesso!"}), 201
 
-    @staticmethod
+  @staticmethod
     def login(data):
         user = User.query.filter_by(username=data['username']).first()
         
-        # Valida senha e gera Token JWT
-        if user and user.check_password(data['password']):
-            # O 'identity' no token será o ID do usuário
-            token = create_access_token(identity=str(user.id))
-            return jsonify({"access_token": token, "role": user.role}), 200
-            
-        return # Valida senha e gera Token JWT
         if user and user.check_password(data['password']):
             token = create_access_token(identity=str(user.id))
             return jsonify({
                 "access_token": token, 
                 "role": user.role, 
-                "username": user.username
+                "username": user.username 
             }), 200
+            
+        return jsonify({"error": "Credenciais inválidas"}), 401
