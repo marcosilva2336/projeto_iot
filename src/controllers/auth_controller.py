@@ -10,7 +10,7 @@ class AuthController:
         if User.query.filter_by(username=data['username']).first():
             return jsonify({"error": "Usuário já existe"}), 400
         
-        # Cria novo usuário com role (Requisito 3)
+        # Cria novo usuário com role
         new_user = User(
             username=data['username'], 
             role=data.get('role', 'user') # Padrão é usuário comum
@@ -21,16 +21,20 @@ class AuthController:
         db.session.commit()
         return jsonify({"msg": "Conta criada com sucesso!"}), 201
 
-  @staticmethod
+    @staticmethod
     def login(data):
         user = User.query.filter_by(username=data['username']).first()
         
+        # Valida senha e gera Token JWT
         if user and user.check_password(data['password']):
+            # O 'identity' no token será o ID do usuário
             token = create_access_token(identity=str(user.id))
+            
+            # Retornamos o token, a role e o username para o Dashboard
             return jsonify({
                 "access_token": token, 
-                "role": user.role, 
-                "username": user.username 
+                "role": user.role,
+                "username": user.username
             }), 200
             
         return jsonify({"error": "Credenciais inválidas"}), 401
